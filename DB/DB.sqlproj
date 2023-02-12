@@ -65,4 +65,7 @@
   <ItemGroup>
     <None Include="SQLServerUT.publish.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <Build Include="Functions\usf_SimpleAdd.sql" />
+  </ItemGroup>
 </Project>
