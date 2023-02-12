@@ -55,8 +55,48 @@ namespace DB.Test
                 Assert.Equal(expected, result);
 
             }
-
         }
+
+        [Fact]
+        public void usp_ShowLogs_HappyPath_ShowLoginsOnly()
+        {
+
+            using (SqlConnection conn = new SqlConnection("Data Source=192.168.100.30,1433;Initial Catalog=SQLServerUT;Integrated Security=SSPI;"))
+            {
+
+                conn.Open();
+
+                SqlCommand cmd = new SqlCommand("TRUNCATE TABLE Users; TRUNCATE TABLE Events; TRUNCATE TABLE Logs", conn);
+                cmd.ExecuteNonQuery();
+
+                cmd = new SqlCommand("INSERT INTO Users (name) VALUES ('TestUser1'), ('TestUser2'), ('TestUser3'); INSERT INTO Events (name, type) VALUES ('Login',1), ('Logout',1);  INSERT INTO Logs (user_id, event_id) VALUES (2, 1), (2,2);", conn);
+                cmd.ExecuteNonQuery();
+
+                cmd = new SqlCommand("dbo.usp_ShowLogs", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@event_type", SqlDbType.Int).Value = 1; //Login only!
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            string user_name = reader.GetString(1);
+                            string event_name = reader.GetString(2);
+
+                            Assert.Equal("Login", event_name);
+                            Assert.Equal("TestUser2", user_name);
+
+                        }
+                        reader.NextResult();
+                    }
+
+                }
+
+            }
+        }
+
 
     }
 }

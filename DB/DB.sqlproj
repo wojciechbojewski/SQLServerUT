@@ -63,10 +63,16 @@
     <Folder Include="Schemas" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="SQLServerUT.publish.xml" />
+    <Build Include="Procedures\usp_ShowLogs.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Functions\usf_SimpleAdd.sql" />
     <Build Include="Procedures\usp_SimpleAdd.sql" />
+    <Build Include="Tables\Users.sql" />
+    <Build Include="Tables\Events.sql" />
+    <Build Include="Tables\Logs.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Script.PostDeployment.sql" />
   </ItemGroup>
 </Project>
