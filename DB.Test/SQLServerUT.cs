@@ -1,5 +1,7 @@
 using System.Data;
 using System.Data.SqlClient;
+using Dapper;
+using DB.Test.DapperModel;
 
 namespace DB.Test
 {
@@ -110,6 +112,55 @@ namespace DB.Test
 
                 }
             }
+
+        }
+
+        //[Fact]
+        [Fact(Skip = "make sure that usp_ShowLogs_HappyPath_ShowLoginsOnly run first")]
+        public void Dapper_The_micro_ORM_created_by_the_people_behind_StackOverflow()
+        {
+            /*--------------------------------------------
+                https://github.com/DapperLib/Dapper
+                https://dapperlib.github.io/Dapper/
+                https://www.learndapper.com/
+
+                Install-Package Dapper
+
+                https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping
+                https://en.wikipedia.org/wiki/List_of_object%E2%80%93relational_mapping_software
+
+            --------------------------------------------*/
+
+            //Query
+            var users = conn.Query<DapperModel.dbo_User>("select * from dbo.Users");
+            var events = conn.Query<DapperModel.dbo_Event>("select * from dbo.Events");
+            var logs = conn.Query<DapperModel.dbo_Log>("select * from dbo.Logs");
+
+            Assert.Equal(3, users.Count()); 
+            Assert.Equal(2, events.Count()); 
+            Assert.Equal(2, logs.Count());
+
+            //Insert
+            List<DapperModel.dbo_Log> newLogs = new List<dbo_Log>()
+            {
+                { new DapperModel.dbo_Log { user_id = 1, event_id = 1} },
+                { new DapperModel.dbo_Log { user_id = 3, event_id = 2} }
+            };
+
+            conn.Execute(@"insert into Logs (user_id, event_id) values (@user_id, @event_id)", newLogs);
+
+            logs = conn.Query<DapperModel.dbo_Log>("select * from Logs");
+            Assert.Equal(4, logs.Count());
+
+            //Procedure woth Return Value
+            var p = new DynamicParameters();
+            p.Add("@Return Value", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
+            p.Add("@a", 5);
+            p.Add("@b", 7);
+            conn.Execute("dbo.usp_SimpleAdd", p, commandType: CommandType.StoredProcedure);
+
+            var sum_a_b = p.Get<int>("@Return Value");
+            Assert.Equal(12, sum_a_b);
 
         }
 
