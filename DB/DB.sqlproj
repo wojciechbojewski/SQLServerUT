@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="Procedures\usp_ShowLogs.sql" />
+    <Build Include="Schemas\foo.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Functions\usf_SimpleAdd.sql" />
@@ -73,6 +74,6 @@
     <Build Include="Tables\Logs.sql" />
   </ItemGroup>
   <ItemGroup>
-    <PostDeploy Include="Script.PostDeployment.sql" />
+    <None Include="SQLServerUT.publish.xml" />
   </ItemGroup>
 </Project>
